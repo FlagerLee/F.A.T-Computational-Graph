@@ -2,8 +2,10 @@
 //  main.cpp
 //  big_work_build_tree
 //
-//  Created by Kevin Tung on 2019/4/27.
-//  Copyright © 2019年 Kevin Tung. All rights reserved.
+//  Created by T on 2019/4/27.
+//  Copyright © 2019年 T. All rights reserved.
+//
+//  To ensure that no one can recognize who we are, I changed the creator's name.     -F
 //
 
 #include <iostream>
@@ -15,13 +17,23 @@ using namespace std;
 Node* create_calculator(string s, int & count_arg) //后者是此运算符的参数个数
 {
     Node* N;
-    if(s=="+"||s=="-"||s=="*"||s=="/")
+    if(s=="+"||s=="-"||s=="*"||s=="/") //|| "Print" || ...
     {
-        
+        //Unary_Operator* una = new Unary_Operator ( s )
         
         count_arg = 1;
     }
+    // Binary/...
     return N;
+}
+inline int priority ( std::string c )
+{
+    int pri = 0;
+    if(c=="+")pri = 1;
+    if(c=="-")pri = 1;
+    if(c=="*")pri = 2;
+    if(c=="/")pri = 2;
+    return pri;
 }
 Node* connect(std::vector<string> vec, int head, int tail)
 {
@@ -70,29 +82,3 @@ Node* connect(std::vector<string> vec, int head, int tail)
     }
     return N;
 }
-inline int priority ( std::string c )
-{
-    int pri = 0;
-    if(c=="+")pri = 1;
-    if(c=="-")pri = 1;
-    if(c=="*")pri = 2;
-    if(c=="/")pri = 2;
-    return pri;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
