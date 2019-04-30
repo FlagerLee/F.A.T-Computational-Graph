@@ -38,15 +38,16 @@ class Node
  * 占位符结点：由基类Node继承而来，表示占位符
 **/ 
 
-class Placeholder : protected Node
+class Placeholder : public Node
 {
     private:
     double value ;
     protected:
     public:
+    bool is_Printed ;
     bool have_value ;
     const std::string name = "placeholder" ;
-    Placeholder ( double v = 0.0 ) : value ( v ) { have_value = false ; }
+    Placeholder ( double v = 0.0 ) : value ( v ) { have_value = false ; is_Printed = false ; }
 } ;
 
 /* Derive: class Constant
@@ -75,9 +76,10 @@ class Var : public Node
     protected:
     friend void eval ( double v ) ;
     public:
+    bool is_Printed ;
     bool have_value ;
     const std::string name = "var" ;
-    Var ( std::string s , double v = 0.0 ) : var_name ( s ) , value ( v ) { have_value = false ; }
+    Var ( std::string s , double v = 0.0 ) : var_name ( s ) , value ( v ) { have_value = false ; is_Printed = false ; }
 } ;
 
 /* Derive: class Var_Constant
@@ -118,7 +120,7 @@ class Calculator : public Node
  * 单目运算符结点
 **/
 
-class Unary_Operator : protected Calculator //单目运算符
+class Unary_Operator : public Calculator //单目运算符
 {
     private:
     std::string cal_name ; //运算符名称
@@ -130,18 +132,19 @@ class Unary_Operator : protected Calculator //单目运算符
     double cal ( std::string s , double v , bool& is_legal ) ;
 } ;
 
-class Binary_Operator : protected Calculator //双目运算符
+class Binary_Operator : public Calculator //双目运算符
 {
     private:
     std::string cal_name ;
     protected:
     public:
     const std::string name = "binary_operator" ;
+    Binary_Operator ( std::string s ) : cal_name ( s ) {}
 
     double cal ( std::string s , double v1 , double v2 , bool& is_legal ) ;
 } ;
 
-class Ternary_Operator : protected Calculator //三目运算符
+class Ternary_Operator : public Calculator //三目运算符
 {
     private:
     std::string cal_name ;
