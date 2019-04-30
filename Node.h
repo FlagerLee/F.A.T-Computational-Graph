@@ -1,5 +1,5 @@
-#ifndef ___CALCULATIONCHART__NODE_H___
-#define ___CALCULATIONCHART__NODE_H___
+#ifndef ___COMPUTATIONALGRAPH__NODE_H___
+#define ___COMPUTATIONALGRAPH__NODE_H___
 
 /* 此处注释在开发完成后删掉
  * 在此段注释下方添加头文件
@@ -26,10 +26,10 @@ class Node
     private:
     std::vector < Node* > next ; //树的后继结点
     protected:
-    void add_next ( Node* N ) ;
     void del () ; //派生类析构用：删除vector
     friend void build_tree ( std::string exp ) ;
     public:
+    void add_next ( Node* N ) ;
     Node () {}
     ~Node () { del() ; }
 } ;
@@ -44,8 +44,9 @@ class Placeholder : protected Node
     double value ;
     protected:
     public:
+    bool have_value ;
     const std::string name = "placeholder" ;
-    Placeholder ( double v = 0.0 ) : value ( v ) {}
+    Placeholder ( double v = 0.0 ) : value ( v ) { have_value = false ; }
 } ;
 
 /* Derive: class Constant
@@ -72,10 +73,11 @@ class Var : public Node
     std::string var_name ; //变量名
     double value ; //当前数据下变量的值
     protected:
-    friend void eval ( double v ) {}
+    friend void eval ( double v ) ;
     public:
+    bool have_value ;
     const std::string name = "var" ;
-    Var ( std::string s , double v = 0.0 ) : var_name ( s ) , value ( v ) {}
+    Var ( std::string s , double v = 0.0 ) : var_name ( s ) , value ( v ) { have_value = false ; }
 } ;
 
 /* Derive: class Var_Constant
