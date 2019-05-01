@@ -36,6 +36,17 @@ inline int priority ( std::string c )
     if(c=="/")pri = 2;
     return pri;
 }
+void delete_tree ( Node* N )
+{
+    int len = N -> next.size() ;
+    for ( int i = len - 1 ; i >=0 ; i -- )
+    {
+        std::string s = N -> next [ i ] -> get_name() ;
+        if ( s == "Placeholder" || s == "Constant" || s == "Var" || s == "Var_Constant" ) continue ;
+        else delete_tree ( N -> next [ i ] ) ;
+        delete ( N -> next [ i ] ) ;
+    }
+}
 Var* build_tree(string s, std::map < std::string , Node* > Var_map )   // 要有單純string版本的初始化
                             //已經確定了第一節為變量名、第二節為 "="
 {
