@@ -1,5 +1,5 @@
-#ifndef __BUILD_TREE_H__
-#define __BUILD_TREE_H__
+#ifndef __COMPUTATIONALGRAPH_BUILD_TREE_H__
+#define __COMPUTATIONALGRAPH_BUILD_TREE_H__
 
 #include <string>
 #include <map>
@@ -9,6 +9,8 @@
 inline int priority ( std::string c ) ;
 
 Node* create_calculator ( std::string s , int& count_arg ) ;
+
+void init ( Node* N ) ;
 
 void delete_tree ( Node* N ) ;
 
