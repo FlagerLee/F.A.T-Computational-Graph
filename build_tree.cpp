@@ -10,7 +10,7 @@
 #include <vector>
 #include <string>
 #include "Node.h"
-#include"Function.h"
+#include "build_tree.h"
 #include<sstream>
 using namespace std;
 void build_tree(string s);
