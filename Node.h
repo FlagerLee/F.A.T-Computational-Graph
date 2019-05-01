@@ -28,11 +28,12 @@ private:
 protected:
     void del () ; //派生类析构用：删除vector
     friend void build_tree ( std::string exp ) ;
+    friend void delete_tree ( Node* N ) ;
 public:
+    virtual std::string get_name () ;
     void add_next ( Node* N ) ;
     Node () {}
     ~Node () { del() ; }
-    std::string get_name();
 } ;
 
 std::map < std::string , Node* > Var_map ;
@@ -49,7 +50,7 @@ protected:
 public:
     bool is_Printed ;
     bool have_value ;
-    const std::string name = "placeholder" ;
+    std::string get_name () ;
     Placeholder ( double v = 0.0 ) : value ( v ) { have_value = false ; is_Printed = false ; }
 } ;
 
@@ -63,7 +64,7 @@ private:
     double value ;
 protected:
 public:
-    const std::string name = "constant" ;
+    std::string get_name () ;
     Constant ( double v = 0.0 ) : value ( v ) {}
 } ;
 
@@ -81,7 +82,7 @@ protected:
 public:
     bool is_Printed ;
     bool have_value ;
-    const std::string name = "var" ;
+    std::string get_name () ;
     Var ( std::string s , double v = 0.0 ) : var_name ( s ) , value ( v ) { have_value = false ; is_Printed = false ; }
 } ;
 
@@ -96,7 +97,7 @@ private:
 protected:
 public:
     void set ( double v ) { value = v ; }
-    const std::string name = "var_constant" ;
+    std::string get_name () ;
     Var_Constant ( double v ) : value ( v ) {}
 } ;
 
@@ -115,7 +116,7 @@ protected:
     template <typename _Tp_> double get_value ( _Tp_ T ) ;
     template <typename _Tp_> void eval ( double v , _Tp_ T ) ;
 public:
-    const std::string name = "calculator" ;
+    std::string get_name () ;
     Calculator () {}
 } ;
 
@@ -129,7 +130,7 @@ private:
     std::string cal_name ; //运算符名称
 protected:
 public:
-    const std::string name = "unary_operator" ;
+    std::string get_name () ;
     Unary_Operator ( std::string s ) : cal_name ( s ) {}
     
     double cal ( std::string s , double v , bool& is_legal ) ;
@@ -141,7 +142,7 @@ private:
     std::string cal_name ;
 protected:
 public:
-    const std::string name = "binary_operator" ;
+    std::string get_name () ;
     Binary_Operator ( std::string s ) : cal_name ( s ) {}
     
     double cal ( std::string s , double v1 , double v2 , bool& is_legal ) ;
@@ -153,11 +154,10 @@ private:
     std::string cal_name ;
 protected:
 public:
-    const std::string name = "ternary_operator" ;
+    std::string get_name () ;
     Ternary_Operator ( std::string s ) : cal_name ( s ) {}
     
     double cal ( std::string s , double v1 , double v2 , double v3 , bool& is_legal ) ;
 } ;
 
 #endif
-
