@@ -7,8 +7,6 @@
 
 using namespace std ;
 
-map < string , Node* > Var_map ;
-
 //Node类
 
 void Node::add_next ( Node* N ) { Node::next.push_back ( N ) ; }
