@@ -1,0 +1,8 @@
+2019.05.01
+Updated by F
+更新内容：
+1.修改init()函数，改正原有错误。
+2.修改build_tree()函数，增加简单的判断语法正确与重构树的能力。
+3.修改Var\Placeholder\Constant\Var_Constant类，增加友元get_value()\eval()；删除Calculator中友元get_value()\eval()。
+4.修改Node结点，新增友元delete_tree()\init()。
+5.新增头文件及其实现evaluation.h\evaluation.cpp，计算功能将放在此。
