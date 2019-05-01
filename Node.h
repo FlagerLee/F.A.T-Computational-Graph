@@ -32,8 +32,7 @@ public:
     void add_next ( Node* N ) ;
     Node () {}
     ~Node () { del() ; }
-    //int next_size(){return next.size();};
-    //std::string get_next_name(int i){return next[i]->get_name}
+    std::string get_name();
 } ;
 
 std::map < std::string , Node* > Var_map ;

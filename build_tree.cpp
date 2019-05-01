@@ -126,7 +126,7 @@ inline int priority ( std::string c )
 
 void init(Node* N)
 {
-    std::string s = N->get_name;
+    std::string s = N->get_name();
     if(s=="var"||s=="placeholder")
     {
         N->have_value = false;
