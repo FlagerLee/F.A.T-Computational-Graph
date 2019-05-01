@@ -18,6 +18,15 @@ void Node::del ()
     for ( int i = 0 ; i < len ; i ++ ) delete next [ i ] ;
     vector < Node* > ().swap ( next ) ;
 }
+std::string Node::get_name () { return "Node" ; }
+std::string Var::get_name () { return "Var" ; }
+std::string Placeholder::get_name () { return "Placeholder" ; }
+std::string Var_Constant::get_name () { return "Var_Constant" ; }
+std::string Constant::get_name () { return "Constant" ; }
+std::string Calculator::get_name () { return "Calculator" ; }
+std::string Unary_Operator::get_name () { return "Unary_Operator" ; }
+std::string Binary_Operator::get_name () { return "Binary_Operator" ; }
+std::string Ternary_Operator::get_name () { return "Ternary_Operator" ; }
 
 //#end#
 
@@ -139,8 +148,3 @@ double Ternary_Operator::cal ( string s , double v1 , double v2 , double v3 , bo
 }
 
 //#end#
-
-void build_tree ( string exp ) //根据输入的结点建树
-{
-    
-}
