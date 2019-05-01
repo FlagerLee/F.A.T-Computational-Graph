@@ -1,5 +1,5 @@
 #include <string>
-
+#include <map>
 #include <cmath>
 #include <iostream>
 #include <cstdio>
@@ -7,6 +7,7 @@
 
 using namespace std ;
 
+map < string , Node* > Var_map ;
 
 //Node类
 
@@ -30,20 +31,6 @@ std::string Ternary_Operator::get_name () { return "Ternary_Operator" ; }
 //#end#
 
 //Calculator类
-
-template <typename _Tp_>
-double Calculator::get_value ( _Tp_ T )
-{
-    if ( T.name == "var" || T.name == "placeholder" || T.name == "constant" || T.name == "var_constant" ) return T.value ;
-    else std::cout << "Error: " << T.name << "does not have value\n" ;
-}
-
-template <typename _Tp_>
-void Calculator::eval ( double v , _Tp_ T )
-{
-    if ( T.name == "var" || T.name == "placeholder" || T.name == "var_constant" ) T.value = v ;
-    else std::cout << "Error: You cannot evaluate a " << T.name << "\n" ;
-}
 
 double Unary_Operator::cal ( string s , double v , bool& is_legal )
 {
