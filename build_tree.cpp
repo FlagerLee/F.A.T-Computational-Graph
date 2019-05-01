@@ -39,22 +39,17 @@ Node* create_calculator(string s, int & count_arg) //后者是此运算符的参
     // Binary/...
     return N;
 }
-void build_tree(string s)   // 要有單純string版本的初始化
-                                        //已經確定了第一節為變量名、第二節為 "="
+
+Var* build_tree(string s, std::map < std::string , Node* > Var_map )   // 要有單純string版本的初始化
+//已經確定了第一節為變量名、第二節為 "="
 {
     stringstream is(s);
     string buf;
     vector<string> vec;
     while(is>>buf)vec.push_back(buf);
-    
-    if(!Var_map.count(vec[0]))
-    {
-        delete_tree(Var_map[vec[0]]);
-    }
-    
     Var* node = new Var(vec[0]); //確定是Var類型
-    node->add_next(connect(vec, 2, vec.size()-1)); //＊
-    return;
+    node->add_next(connect(vec, Var_map , 2, vec.size()-1)); //＊
+    return node;
 }
 void delete_tree ( Node* N )
 {
@@ -67,7 +62,7 @@ void delete_tree ( Node* N )
             delete ( N -> next [ i ] ) ;
     }
 }
-Node* connect(std::vector<string> vec, int head, int tail)
+Node* connect(std::vector<string> vec , std::map<std::string , Node*> Var_map , int head , int tail)
 {
     Node* N;
     if(head==tail)
@@ -95,19 +90,19 @@ Node* connect(std::vector<string> vec, int head, int tail)
         }
         if(position_least_priority<0)//整个式子被括号括起来
         {
-            N = connect(vec, head+1, tail-1);
+            N = connect(vec, Var_map, head+1, tail-1);
         }
         else
         {
-           N =  create_calculator(vec[position_least_priority], count_arg);//后者会被修改
+            N =  create_calculator(vec[position_least_priority], count_arg);//后者会被修改
             switch (count_arg) {
                 case 1:
-                    N->add_next(connect(vec, position_least_priority+1, tail));
+                    N->add_next(connect(vec, Var_map, position_least_priority+1, tail));
                     break;
                     
                 case 2:
-                    N->add_next(connect(vec, head, position_least_priority-1));
-                    N->add_next(connect(vec, position_least_priority+1, tail));
+                    N->add_next(connect(vec, Var_map, head, position_least_priority-1));
+                    N->add_next(connect(vec, Var_map, position_least_priority+1, tail));
                     break;
             }
         }
