@@ -12,6 +12,7 @@
 
 #include <vector>
 #include <string>
+map < string , Node* > Var_map ;
 
 /* Base: class Node
  * 由于计算图基于树的数据结构，将结点作为基类
