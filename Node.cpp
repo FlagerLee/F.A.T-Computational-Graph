@@ -4,6 +4,7 @@
 #include <iostream>
 #include <cstdio>
 #include "Node.h"
+#include "CG_debug.h"
 
 using namespace std ;
 
@@ -41,13 +42,25 @@ double Unary_Operator::cal ( string s , double v , bool& is_legal )
     else if ( s == "LOG" )
     {
         if ( v > 0 ) return log ( v ) ;
-        else { is_legal = false ; cout << "Error: LOG operator's input must be positive\n" ; return 0.0 ; }
+        else 
+        {
+            is_legal = false ;
+            throw_error ( 4 ) ;
+            return 0.0 ;
+        }
     }
     else if ( s == "PRINT" )
     {
         cout << "Print Operator: " << s << "=" << v << "\n" ;
         return v ;
     }
+    else
+    {
+        is_legal = false ;
+        throw_error ( 3 , s ) ;
+        return 0.0 ;
+    }
+    
     return 0.0 ;
 }
 
@@ -63,7 +76,7 @@ double Binary_Operator::cal ( string s , double v1 , double v2 , bool& is_legal 
             if ( v2 == 0 )
             {
                 is_legal = false ;
-                cout << "ERROR: Division by zero\n" ;
+                throw_error ( 1 ) ;
                 return 0.0 ;
             }
             else return v1 / v2 ;
@@ -99,7 +112,7 @@ double Binary_Operator::cal ( string s , double v1 , double v2 , bool& is_legal 
             if ( s.length() == 1 )
             {
                 is_legal = false ;
-                cout << "Error: Cannot evaluate in an expression\n" ;
+                throw_error ( 5 ) ;
                 return 0.0 ;
             }
             else
@@ -111,7 +124,7 @@ double Binary_Operator::cal ( string s , double v1 , double v2 , bool& is_legal 
         default :
         {
             is_legal = false ;
-            cout << "Error: No matching operators for '" << s << "'\n" ;
+            throw_error ( 3 , s ) ;
             return 0.0 ;
         }
     }
@@ -127,7 +140,7 @@ double Ternary_Operator::cal ( string s , double v1 , double v2 , double v3 , bo
     else
     {
         is_legal = false ;
-        cout << " Error: No matching operators for '" << s << "'\n" ;
+        throw_error ( 3 , s ) ;
         return 0.0 ;
     }
     return 0.0 ;
