@@ -1,6 +1,10 @@
 #include "Node.h"
 #include "CG_debug.h"
 #include <string>
+#include <sstream>
+#include <vector>
+#include <map>
+#include <cstdlib>
 
 double get_value ( Node* N ) //必须确保N指向的是Var类或Placeholder类或Constant类或Var_Constant类
 {
@@ -25,6 +29,7 @@ double get_value ( Node* N ) //必须确保N指向的是Var类或Placeholder类�
         Var_Constant* vc = dynamic_cast < Var_Constant* > ( N ) ;
         return vc -> value ;
     }
+    throw_error ( 12 , s ) ;
     return 0.0 ;
 }
 
@@ -43,10 +48,99 @@ bool eval ( double v , Node* N ) //必须确保N指向的是Var类或Placeholder
         p -> value = v ;
         return true ;
     }
+    throw_error ( 6 ) ;
     return false ;
 }
 
-bool Compute ( std::string s )
+bool Compute ( std::string s , std::map < std::string , Node* > Var_map , vector < double > setanswer , double& answer ) //输入一个字符串s,将其计算出来
+{
+    std::stringstream in ( s ) ;
+    std::string buf ;
+    std::vector < std::string > vec ;
+    while ( in >> buf ) vec.push_back ( buf ) ;
+    if ( vec.size() == 0 )
+    {
+        throw_error ( 10 ) ;
+        return false ;
+    }
+    if ( vec [ 0 ] == "SETCONSTANT" )
+    {
+        if ( vec.size () < 3 )
+        {
+            throw_error ( 10 ) ;
+            return false ;
+        }
+        if ( Var_map.find ( vec [ 1 ] ) == Var_map.end() )
+        {
+            throw_error ( 11 , vec [ 1 ] ) ;
+            return false ;
+        }
+
+        double v = atof ( vec [ 2 ] ) ;
+        //此处本想try-catch，但由于不知道atof但错误返回就没有实现
+        if ( Var_map [ vec [ 1 ] ] -> get_name () != "Var_Constant" )
+        {
+            throw_error ( 13 ) ;
+            return false ;
+        }
+        Var_Constant* vc = dynamic_cast < Var_Constant* > ( Var_map [ vec [ 1 ] ] ) ;
+        vc -> set ( v ) ;
+        return true ;
+    }
+    else if ( vec [ 0 ] == "SETANSWER" )
+    {
+        if ( vec.size() < 3 )
+        {
+            throw_error ( 10 ) ;
+            return false ;
+        }
+        if ( Var_map.find ( vec [ 1 ] ) == Var_map.end() )
+        {
+            throw_error ( 11 , vec [ 1 ] ) ;
+            return false ;
+        }
+        Var_Constant* vc = dynamic_cast < Var_Constant* > ( Var_map [ vec [ 1 ] ] ) ;
+        int i = stoi ( vec [ 2 ] ) ;
+        vc -> set ( setanswer [ i ] ) ;
+        return true ;
+    }
+    else if ( vec [ 0 ] == "EVAL" )
+    {
+        if ( Var_map [ vec [ 1 ] ] == Var_map.end() )
+        {
+            throw_error ( 11 , vec [ 1 ] ) ;
+            return false ;
+        }
+        int Placeholder_number = stoi ( vec [ 2 ] ) ;
+        if ( Placeholder_number * 2 + 3 > vec.size() )
+        {
+            throw_error ( 10 ) ;
+            return false ;
+        }
+        for ( int i = 0 ; i < Placeholder_number ; i ++ )
+        {
+            std::string name = vec [ 3 + ( 2 * i ) - 1 ] ;
+            if ( Var_map.find ( name ) == Var_map.end() )
+            {
+                throw_error ( 11 , vec [ 3 + ( 2 * i ) - 1 ] ) ;
+                return false ;
+            }
+            std::string type_name = Var_map [ name ] -> get_name () ;
+            if ( type_name != "Placeholder" )
+            {
+                throw_error ( 14 ) ;
+                return false ;
+            }
+            double v = atof ( vec [ 3 + ( 2 * i ) ] ) ;
+            eval ( v , Var_map [ name ] ) ;
+        }
+        bool is_legal = true ;
+        answer = com ( Var_map [ vec [ 1 ] ] , is_legal ) ;
+        return is_legal ;
+    }
+    throw_error ( 10 ) ;
+    return false ;
+}
 
 double com( Node* N , bool& is_legal ) 
 {
