@@ -37,17 +37,42 @@ void throw_error ( int v , std::string s = "" )
         }
         case 7 :
         {
-            std::cout << "Error: Cannot define a variate by itself\n"
+            std::cout << "Error: Cannot define a variate by itself\n" ;
             break ;
         }
         case 8 :
         {
-            std::cout << "Error: Cannot compute. Please check if you have added new operators. "
+            std::cout << "Error: Cannot compute. Please check if you have added new operators. " ;
             break ;
         }
         case 9 :
         {
             std::cout << "Error: Unknown operator type\n" ;
+            break ;
+        }
+        case 10 :
+        {
+            std::cout << "Error: illegal expression\n" ;
+            break ;
+        }
+        case 11 :
+        {
+            std::cout << "Error: Non-existent node '" << s << "'\n" ;
+            break ;
+        }
+        case 12 :
+        {
+            std::cout << "Error: Type '" << s << "' does not have value\n" ;
+            break ;
+        }
+        case 13 :
+        {
+            std::cout << "Error: Cannot use 'SETCONSTANT' to a non-Var_Constant node\n" ;
+            break ;
+        }
+        case 14 :
+        {
+            std::cout << "Error: Cannot evaluate a non-Placeholder node\n" ;
             break ;
         }
         default :
