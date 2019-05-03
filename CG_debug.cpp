@@ -43,6 +43,12 @@ void throw_error ( int v , std::string s = "" )
         case 8 :
         {
             std::cout << "Error: Cannot compute. Please check if you have added new operators. "
+            break ;
+        }
+        case 9 :
+        {
+            std::cout << "Error: Unknown operator type\n" ;
+            break ;
         }
         default :
         {
