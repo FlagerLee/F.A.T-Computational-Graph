@@ -6,6 +6,33 @@
 #include "Node.h"
 #include "build_tree.h"
 using namespace std;
+
+void build_var ( string s , map < string , Node* >& Var_map )
+{
+    stringstream in ( s ) ;
+    vector < string > vec ;
+    string buffer ;
+    while ( in >> buffer ) vec.push_back ( buffer ) ;
+    if ( vec [ 1 ] == "P" )
+    {
+        Node* N = new Placeholder ;
+        Var_map [ vec [ 0 ] ] = N ;
+        return ;
+    }
+    if ( vec [ 1 ] == "C" )
+    {
+        Node* N = new Constant ( stod ( vec [ 2 ] ) ) ;
+        Var_map [ vec [ 0 ] ] = N ;
+        return ;
+    }
+    if ( vec [ 1 ] == "V" )
+    {
+        Node* N = new Var_Constant ( stod ( vec [ 2 ] ) ) ;
+        Var_map [ vec [ 0 ] ] = N ;
+        return ;
+    }
+}
+
 Node* create_calculator(string s, int & count_arg) //后者是此运算符的参数个数
 {
     Node* N ;
@@ -69,6 +96,7 @@ void init(Node* N)
         init ( N -> next [ i ] );
     }
 }
+
 Var* build_tree(string s, std::map < std::string , Node* > Var_map )   // 要有單純string版本的初始化
 //已經確定了第一節為變量名、第二節為 "="
 {

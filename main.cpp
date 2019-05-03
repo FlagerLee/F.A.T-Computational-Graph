@@ -18,17 +18,22 @@ int main()
     map<string,Node*> my_map;
     vector<double> set_answer_value;
     cin>>n;
+    getchar () ;
     for(int i=0; i<n; i++)
     {
+
         getline(cin,buffer);
+        build_var ( buffer , my_map ) ;
     }
     cin>>m;
+    getchar();
     for(int i=0; i<m; i++)
     {
         getline(cin,buffer);
         build_tree(buffer, my_map);
     }
     cin>>q;
+    getchar();
     for(int i=0;i<q;i++)
     {
         getline(cin,buffer);

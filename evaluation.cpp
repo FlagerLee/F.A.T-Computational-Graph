@@ -119,10 +119,10 @@ bool Compute ( std::string s , std::map < std::string , Node* > Var_map , std::v
         }
         for ( int i = 0 ; i < Placeholder_number ; i ++ )
         {
-            std::string name = vec [ 3 + ( 2 * i ) - 1 ] ;
+            std::string name = vec [ 2 + ( 2 * i ) - 1 ] ;
             if ( Var_map.find ( name ) == Var_map.end() )
             {
-                throw_error ( 11 , vec [ 3 + ( 2 * i ) - 1 ] ) ;
+                throw_error ( 11 , vec [ 2 + ( 2 * i ) - 1 ] ) ;
                 return false ;
             }
             std::string type_name = Var_map [ name ] -> get_name () ;
@@ -131,7 +131,7 @@ bool Compute ( std::string s , std::map < std::string , Node* > Var_map , std::v
                 throw_error ( 14 ) ;
                 return false ;
             }
-            double v = stod ( vec [ 3 + ( 2 * i ) ] ) ;
+            double v = stod ( vec [ 2 + ( 2 * i ) ] ) ;
             eval ( v , Var_map [ name ] ) ;
         }
         bool is_legal = true ;
