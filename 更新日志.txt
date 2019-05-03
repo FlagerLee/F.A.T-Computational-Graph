@@ -6,3 +6,10 @@ Updated by F
 3.修改Var\Placeholder\Constant\Var_Constant类，增加友元get_value()\eval()；删除Calculator中友元get_value()\eval()。
 4.修改Node结点，新增友元delete_tree()\init()。
 5.新增头文件及其实现evaluation.h\evaluation.cpp，计算功能将放在此。
+
+2019.05.03
+Updated by F
+更新内容：
+1.修改compute函数（by A）并改名为com，新增Compute函数（未实现）
+2.新增throw_error函数
+3.修改若干类的友元
