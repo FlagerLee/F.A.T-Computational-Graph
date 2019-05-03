@@ -16,7 +16,7 @@ int main()
     int n,m,q;
     string buffer;
     map<string,Node*> my_map;
-    vector<int> set_answer_value;
+    vector<double> set_answer_value;
     cin>>n;
     for(int i=0; i<n; i++)
     {
@@ -33,7 +33,7 @@ int main()
     {
         getline(cin,buffer);
         double answer;
-        if(Compute(buffer,my_map,answer,set_answer_value))
+        if(Compute(buffer,my_map,set_answer_value,answer))
         {
             set_answer_value.push_back(answer);
             cout<<answer<<endl;

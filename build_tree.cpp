@@ -1,18 +1,10 @@
-//
-//  main.cpp
-//  big_work_build_tree
-//
-//  Created by Kevin Tung on 2019/4/27.
-//  Copyright © 2019年 Kevin Tung. All rights reserved.
-//
-
 #include <sstream>
 #include <iostream>
 #include <string>
 #include <vector>
 #include <map>
 #include "Node.h"
-
+#include "build_tree.h"
 using namespace std;
 Node* create_calculator(string s, int & count_arg) //后者是此运算符的参数个数
 {
@@ -127,7 +119,7 @@ Node* connect(std::vector<string> vec , std::map<std::string , Node*> Var_map , 
         }
         else
         {
-           N =  create_calculator(vec[position_least_priority], count_arg);//后者会被修改
+            N =  create_calculator(vec[position_least_priority], count_arg);//后者会被修改
             switch (count_arg) {
                 case 1:
                     N->add_next(connect(vec, Var_map, position_least_priority+1, tail));
@@ -142,3 +134,16 @@ Node* connect(std::vector<string> vec , std::map<std::string , Node*> Var_map , 
     }
     return N;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+

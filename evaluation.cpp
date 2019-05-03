@@ -52,7 +52,7 @@ bool eval ( double v , Node* N ) //必须确保N指向的是Var类或Placeholder
     return false ;
 }
 
-bool Compute ( std::string s , std::map < std::string , Node* > Var_map , vector < double > setanswer , double& answer ) //输入一个字符串s,将其计算出来
+bool Compute ( std::string s , std::map < std::string , Node* > Var_map , std::vector < double > setanswer , double& answer ) //输入一个字符串s,将其计算出来
 {
     std::stringstream in ( s ) ;
     std::string buf ;
@@ -75,8 +75,8 @@ bool Compute ( std::string s , std::map < std::string , Node* > Var_map , vector
             throw_error ( 11 , vec [ 1 ] ) ;
             return false ;
         }
-
-        double v = atof ( vec [ 2 ] ) ;
+        
+        double v = stod ( vec [ 2 ] ) ;
         //此处本想try-catch，但由于不知道atof但错误返回就没有实现
         if ( Var_map [ vec [ 1 ] ] -> get_name () != "Var_Constant" )
         {
@@ -106,7 +106,7 @@ bool Compute ( std::string s , std::map < std::string , Node* > Var_map , vector
     }
     else if ( vec [ 0 ] == "EVAL" )
     {
-        if ( Var_map [ vec [ 1 ] ] == Var_map.end() )
+        if ( Var_map.find(vec [ 1 ] ) == Var_map.end() )
         {
             throw_error ( 11 , vec [ 1 ] ) ;
             return false ;
@@ -131,7 +131,7 @@ bool Compute ( std::string s , std::map < std::string , Node* > Var_map , vector
                 throw_error ( 14 ) ;
                 return false ;
             }
-            double v = atof ( vec [ 3 + ( 2 * i ) ] ) ;
+            double v = stod ( vec [ 3 + ( 2 * i ) ] ) ;
             eval ( v , Var_map [ name ] ) ;
         }
         bool is_legal = true ;
@@ -142,30 +142,31 @@ bool Compute ( std::string s , std::map < std::string , Node* > Var_map , vector
     return false ;
 }
 
-double com( Node* N , bool& is_legal ) 
+double com( Node* N , bool& is_legal )
 {
     int len=N->next.size();
-    if(len==0)  
+    if(len==0)
     {
-       std::string name = N -> get_name() ;
-       if ( name == "Placeholder" )
-       {
-           Placeholder* p = dynamic_cast < Placeholder* > ( N ) ;
-           if ( p -> have_value ) return get_value ( N ) ;
-           else
-           {
-               is_legal = false ;
-               throw_error ( 2 ) ;
-               return 0.0 ;
-           }
-       }
-       else
-       {
-           return get_value ( N ) ;
-       }
+        std::string name = N -> get_name() ;
+        if ( name == "Placeholder" )
+        {
+            Placeholder* p = dynamic_cast < Placeholder* > ( N ) ;
+            if ( p -> have_value ) return get_value ( N ) ;
+            else
+            {
+                is_legal = false ;
+                throw_error ( 2 ) ;
+                return 0.0 ;
+            }
+        }
+        else
+        {
+            return get_value ( N ) ;
+        }
     }
-    else if(len==1) 
+    else if(len==1)
     {
+        std::string name = N -> get_name() ;
         if ( name == "Var" )
         {
             Var* var = dynamic_cast < Var* > ( N ) ;

@@ -3,7 +3,7 @@
 
 #include <string>
 
-void throw_error ( int v , std::string s ) ;
+void throw_error ( int v , std::string s = "" ) ;
 
 /* throw_error : 抛出错误
  * 1. division by 0

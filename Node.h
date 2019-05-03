@@ -30,7 +30,7 @@ class Node
     friend void build_tree ( std::string exp ) ;
     friend void delete_tree ( Node* N ) ;
     friend void init ( Node* N ) ;
-    friend double compute ( Node* N , bool& is_legal ) ;
+    friend double com ( Node* N , bool& is_legal ) ;
     public:
     virtual std::string get_name () ;
     void add_next ( Node* N ) ;
