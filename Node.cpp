@@ -33,7 +33,7 @@ std::string Ternary_Operator::get_name () { return "Ternary_Operator" ; }
 
 //Calculator类
 
-double Unary_Operator::cal ( string s , double v , bool& is_legal )
+double Unary_Operator::cal ( string s , double v , bool& is_legal , string print_out )
 {
     if ( s == "SIN" ) return sin ( v ) ;
     else if ( s == "EXP" ) return exp ( v ) ;
@@ -51,7 +51,8 @@ double Unary_Operator::cal ( string s , double v , bool& is_legal )
     }
     else if ( s == "PRINT" )
     {
-        cout << "Print Operator: " << s << "=" << v << "\n" ;
+        cout << "PRINT operator: " << print_out << " = " ;
+        printf ( "%.4lf\n" , v ) ;
         return v ;
     }
     else

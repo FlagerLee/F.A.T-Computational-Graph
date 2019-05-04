@@ -16,7 +16,7 @@ void init ( Node* N ) ;
 
 void delete_tree ( Node* N ) ;
 
-Var* build_tree( std::string s, std::map < std::string , Node* > Var_map ) ;
+void build_tree( std::string s, std::map < std::string , Node* >& Var_map ) ;
 
 Node* connect ( std::vector<std::string> s , std::map<std::string , Node*> Var_map , int head , int tail ) ;
 

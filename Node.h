@@ -46,14 +46,16 @@ class Placeholder : public Node
 {
     private:
     double value ;
+    std::string var_name ;
     protected:
     friend double get_value ( Node* N ) ;
     friend bool eval ( double v , Node* N ) ;
+    friend std::string get_var_name ( Node* N ) ;
     public:
     bool is_Printed ;
     bool have_value ;
     std::string get_name () ;
-    Placeholder ( double v = 0.0 ) : value ( v ) { have_value = false ; is_Printed = false ; }
+    Placeholder ( std::string s , double v = 0.0 ) : var_name  ( s ) , value ( v ) { have_value = false ; is_Printed = false ; }
 } ;
 
 /* Derive: class Constant
@@ -64,11 +66,14 @@ class Constant : public Node
 {
     private:
     double value ;
+    std::string var_name ;
     protected:
     friend double get_value ( Node* N ) ;
+    friend std::string get_var_name ( Node* N ) ;
     public:
+    bool is_Printed ;
     std::string get_name () ;
-    Constant ( double v = 0.0 ) : value ( v ) {}
+    Constant ( std::string s , double v = 0.0 ) :  var_name ( s ) , value ( v ) { is_Printed = false ; }
 } ;
 
 /* Derive: class Var
@@ -83,6 +88,7 @@ class Var : public Node
     protected:
     friend double get_value ( Node* N ) ;
     friend bool eval ( double v , Node* N ) ;
+    friend std::string get_var_name ( Node* N ) ;
     public:
     bool is_Printed ;
     bool have_value ;
@@ -98,12 +104,15 @@ class Var_Constant : public Node
 {
     private:
     double value ;
+    std::string var_name ;
     protected:
     friend double get_value ( Node* N ) ;
+    friend std::string get_var_name ( Node* N ) ;
     public:
+    bool is_Printed ;
     void set ( double v ) { value = v ; }
     std::string get_name () ;
-    Var_Constant ( double v ) : value ( v ) {}
+    Var_Constant ( std::string s , double v ) : var_name ( s ) , value ( v ) { is_Printed = false ; }
 } ;
 
 /* Derive: class Caculator
@@ -137,7 +146,7 @@ class Unary_Operator : public Calculator //单目运算符
     std::string get_name () ;
     Unary_Operator ( std::string s ) : cal_name ( s ) {}
 
-    double cal ( std::string s , double v , bool& is_legal ) ;
+    double cal ( std::string s , double v , bool& is_legal , std::string print_out = "" ) ;
 } ;
 
 class Binary_Operator : public Calculator //双目运算符

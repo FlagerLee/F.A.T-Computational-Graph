@@ -1,11 +1,5 @@
-//
-//  main.cpp
-//  big_work_build_tree
-//
-//  Created by Kevin Tung on 2019/5/3.
-//  Copyright © 2019年 Kevin Tung. All rights reserved.
-//
 #include <iostream>
+#include <cstdio>
 #include "Node.h"
 #include "build_tree.h"
 #include "CG_debug.h"
@@ -38,11 +32,8 @@ int main()
     {
         getline(cin,buffer);
         double answer;
-        if(Compute(buffer,my_map,set_answer_value,answer))
-        {
-            set_answer_value.push_back(answer);
-            cout<<answer<<endl;
-        }
+        if(Compute(buffer,my_map,set_answer_value,answer)) printf ( "%.4lf\n" , answer ) ;
+        set_answer_value.push_back(answer);
     }
 
 }

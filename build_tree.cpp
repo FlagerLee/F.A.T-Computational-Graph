@@ -5,6 +5,7 @@
 #include <map>
 #include "Node.h"
 #include "build_tree.h"
+#include "CG_debug.h"
 using namespace std;
 
 void build_var ( string s , map < string , Node* >& Var_map )
@@ -15,28 +16,30 @@ void build_var ( string s , map < string , Node* >& Var_map )
     while ( in >> buffer ) vec.push_back ( buffer ) ;
     if ( vec [ 1 ] == "P" )
     {
-        Node* N = new Placeholder ;
+        Node* N = new Placeholder ( vec [ 0 ] ) ;
         Var_map [ vec [ 0 ] ] = N ;
         return ;
     }
     if ( vec [ 1 ] == "C" )
     {
-        Node* N = new Constant ( stod ( vec [ 2 ] ) ) ;
+        Node* N = new Constant ( vec [ 0 ] , stod ( vec [ 2 ] ) ) ;
         Var_map [ vec [ 0 ] ] = N ;
         return ;
     }
     if ( vec [ 1 ] == "V" )
     {
-        Node* N = new Var_Constant ( stod ( vec [ 2 ] ) ) ;
+        Node* N = new Var_Constant ( vec [ 0 ] , stod ( vec [ 2 ] ) ) ;
         Var_map [ vec [ 0 ] ] = N ;
         return ;
     }
+    throw_error ( 15 ) ;
+    return ;
 }
 
 Node* create_calculator(string s, int & count_arg) //后者是此运算符的参数个数
 {
     Node* N ;
-    if ( s == "Print" || s == "SIN" || s == "LOG" || s == "EXP" || s == "SIGMOID" || s == "TANH" )
+    if ( s == "PRINT" || s == "SIN" || s == "LOG" || s == "EXP" || s == "SIGMOID" || s == "TANH" )
     {
         N = new Unary_Operator ( s ) ;
         count_arg = 1 ;
@@ -57,12 +60,17 @@ Node* create_calculator(string s, int & count_arg) //后者是此运算符的参
 }
 inline int priority ( std::string c )
 {
-    int pri = 0;
-    if(c=="+")pri = 1;
-    if(c=="-")pri = 1;
-    if(c=="*")pri = 2;
-    if(c=="/")pri = 2;
-    return pri;
+    if(c=="+") return 1 ;
+    if(c=="-") return 1 ;
+    if(c=="*") return 2 ;
+    if(c=="/") return 2 ;
+    if ( c == "SIN" ) return 3 ;
+    if ( c == "LOG" ) return 3 ;
+    if ( c == "EXP" ) return 3 ;
+    if ( c == "SIGMOID" ) return 3 ;
+    if ( c == "TANH" ) return 3 ;
+    if ( c == "PRINT" ) return 4 ;
+    return 0 ;
 }
 void delete_tree ( Node* N )
 {
@@ -90,6 +98,16 @@ void init(Node* N)
         p -> have_value = false ;
         p -> is_Printed = false ;
     }
+    else if ( s == "Constant" )
+    {
+        Constant* c = dynamic_cast < Constant* > ( N ) ;
+        c -> is_Printed = false ;
+    }
+    else if ( s == "Var_Constant" )
+    {
+        Var_Constant* vc = dynamic_cast < Var_Constant* > ( N ) ;
+        vc -> is_Printed = false ;
+    }
     int size = N->next.size();
     for(int i=0;i<size;i++)
     {
@@ -97,7 +115,7 @@ void init(Node* N)
     }
 }
 
-Var* build_tree(string s, std::map < std::string , Node* > Var_map )   // 要有單純string版本的初始化
+void build_tree(string s, std::map < std::string , Node* >& Var_map )   // 要有單純string版本的初始化
 //已經確定了第一節為變量名、第二節為 "="
 {
     stringstream is(s);
@@ -106,17 +124,18 @@ Var* build_tree(string s, std::map < std::string , Node* > Var_map )   // 要有
     while(is>>buf)vec.push_back(buf);
     std::map < std::string , Node* >::iterator iter = Var_map.find ( vec [ 0 ] ) ;
     if ( iter != Var_map.end() ) delete_tree ( Var_map [ vec [ 0 ] ] ) ;
-    Var* node = new Var(vec[0]); //確定是Var類型
+    Node* node = new Var(vec[0]); //確定是Var類型
     if ( vec.size () < 2 || vec [ 1 ] != "=" )
     {
-        std::cout << "Error! This is not a legal expression\n" ;
-        return node ;
+        throw_error ( 10 ) ;
+        return ;
     }
     node->add_next(connect(vec, Var_map , 2, vec.size()-1)); //＊
-    return node;
+    Var_map [ vec [ 0 ] ] = node ;
 }
 Node* connect(std::vector<string> vec , std::map<std::string , Node*> Var_map , int head , int tail)
 {
+   // std::cout << head << " " << tail << "\n" ;
     Node* N;
     if(head==tail)
     {
@@ -128,7 +147,8 @@ Node* connect(std::vector<string> vec , std::map<std::string , Node*> Var_map , 
         int position_least_priority = -1;
         int least_priority = 10000;//别搞出10000个运算符就好。。
         int count_arg;//运算符数
-        for(int i = 0; i<vec.size(); i++ )
+        //std::cout << vec [ head ] << "\n" ;
+        for(int i = head; i<=tail; i++ )
         {
             if(vec[i]=="("){count_bracket++;}
             else if(vec[i]==")"){count_bracket--;}
@@ -153,25 +173,15 @@ Node* connect(std::vector<string> vec , std::map<std::string , Node*> Var_map , 
                     N->add_next(connect(vec, Var_map, position_least_priority+1, tail));
                     break;
                     
-                default:
+                case 2:
                     N->add_next(connect(vec, Var_map, head, position_least_priority-1));
                     N->add_next(connect(vec, Var_map, position_least_priority+1, tail));
                     break;
+                
+                case 3:
+                    
             }
         }
     }
     return N;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

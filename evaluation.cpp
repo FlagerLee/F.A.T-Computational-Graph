@@ -1,10 +1,12 @@
 #include "Node.h"
 #include "CG_debug.h"
+#include "build_tree.h"
 #include <string>
 #include <sstream>
 #include <vector>
 #include <map>
 #include <cstdlib>
+#include <iostream>
 
 double get_value ( Node* N ) //必须确保N指向的是Var类或Placeholder类或Constant类或Var_Constant类
 {
@@ -52,6 +54,33 @@ bool eval ( double v , Node* N ) //必须确保N指向的是Var类或Placeholder
     return false ;
 }
 
+std::string get_var_name ( Node* N )
+{
+    std::string name = N -> get_name () ;
+    if ( name == "Placeholder" )
+    {
+        Placeholder* p = dynamic_cast < Placeholder* > ( N ) ;
+        return p -> var_name ;
+    }
+    if ( name == "Var" )
+    {
+        Var* var = dynamic_cast < Var* > ( N ) ;
+        return var -> var_name ;
+    }
+    if ( name == "Constant" )
+    {
+        Constant* c = dynamic_cast < Constant* > ( N ) ;
+        return c -> var_name ;
+    }
+    if ( name == "Var_Constant" )
+    {
+        Var_Constant* vc = dynamic_cast < Var_Constant* > ( N ) ;
+        return vc -> var_name ;
+    }
+    throw_error ( 10 ) ;
+    return "" ;
+}
+
 bool Compute ( std::string s , std::map < std::string , Node* > Var_map , std::vector < double > setanswer , double& answer ) //输入一个字符串s,将其计算出来
 {
     std::stringstream in ( s ) ;
@@ -85,7 +114,7 @@ bool Compute ( std::string s , std::map < std::string , Node* > Var_map , std::v
         }
         Var_Constant* vc = dynamic_cast < Var_Constant* > ( Var_map [ vec [ 1 ] ] ) ;
         vc -> set ( v ) ;
-        return true ;
+        return false ;
     }
     else if ( vec [ 0 ] == "SETANSWER" )
     {
@@ -101,8 +130,8 @@ bool Compute ( std::string s , std::map < std::string , Node* > Var_map , std::v
         }
         Var_Constant* vc = dynamic_cast < Var_Constant* > ( Var_map [ vec [ 1 ] ] ) ;
         int i = stoi ( vec [ 2 ] ) ;
-        vc -> set ( setanswer [ i ] ) ;
-        return true ;
+        vc -> set ( setanswer [ i - 1 ] ) ;
+        return false ;
     }
     else if ( vec [ 0 ] == "EVAL" )
     {
@@ -117,7 +146,7 @@ bool Compute ( std::string s , std::map < std::string , Node* > Var_map , std::v
             throw_error ( 10 ) ;
             return false ;
         }
-        for ( int i = 0 ; i < Placeholder_number ; i ++ )
+        for ( int i = 1 ; i <= Placeholder_number ; i ++ )
         {
             std::string name = vec [ 2 + ( 2 * i ) - 1 ] ;
             if ( Var_map.find ( name ) == Var_map.end() )
@@ -125,17 +154,21 @@ bool Compute ( std::string s , std::map < std::string , Node* > Var_map , std::v
                 throw_error ( 11 , vec [ 2 + ( 2 * i ) - 1 ] ) ;
                 return false ;
             }
-            std::string type_name = Var_map [ name ] -> get_name () ;
+            Node* &N = Var_map [ name ] ;
+            std::string type_name = N -> get_name () ;
             if ( type_name != "Placeholder" )
             {
                 throw_error ( 14 ) ;
                 return false ;
             }
             double v = stod ( vec [ 2 + ( 2 * i ) ] ) ;
-            eval ( v , Var_map [ name ] ) ;
+            eval ( v , N ) ;
+            Placeholder* p = dynamic_cast < Placeholder* > ( N ) ;
+            p -> have_value = true ;
         }
         bool is_legal = true ;
         answer = com ( Var_map [ vec [ 1 ] ] , is_legal ) ;
+        init ( Var_map [ vec [ 1 ] ] ) ;
         return is_legal ;
     }
     throw_error ( 10 ) ;
@@ -188,7 +221,53 @@ double com( Node* N , bool& is_legal )
             Unary_Operator* una = dynamic_cast < Unary_Operator* > ( N ) ;
             double v0 = com ( N -> next[0] , is_legal ) ;
             if ( !is_legal ) return 0.0 ;
-            double v = una -> cal ( una -> cal_name , v0 , is_legal );
+            double v ;
+            if ( una -> cal_name == "PRINT" )
+            {
+                Node* n = una -> next [ 0 ] ;
+                std::string next_name = n -> get_name () ;
+                if ( next_name == "Placeholder" )
+                {
+                    Placeholder* p = dynamic_cast < Placeholder* > ( n ) ;
+                    if ( ! ( p -> is_Printed ) )
+                    {
+                        v = una -> cal ( una -> cal_name , v0 , is_legal , get_var_name ( N -> next [ 0 ] ) ) ;
+                        p -> is_Printed = true ;
+                    }
+                    else v = v0 ;
+                }
+                else if ( next_name == "Var" )
+                {
+                    Var* var = dynamic_cast < Var* > ( n ) ;
+                    if ( ! ( var -> is_Printed ) )
+                    {
+                        v = una -> cal ( una -> cal_name , v0 , is_legal , get_var_name ( N -> next [ 0 ] ) ) ;
+                        var -> is_Printed = true ;
+                    }
+                    else v = v0 ;
+                }
+                else if ( next_name == "Constant" )
+                {
+                    Constant* c = dynamic_cast < Constant* > ( n ) ;
+                    if ( ! ( c -> is_Printed ) ) 
+                    {
+                        v = una -> cal ( una -> cal_name , v0 , is_legal , get_var_name ( N -> next [ 0 ] ) ) ;
+                        c -> is_Printed = true ;
+                    }
+                    else v = v0 ;
+                }
+                else if ( next_name == "Var_Constant" )
+                {
+                    Var_Constant* vc = dynamic_cast < Var_Constant* > ( n ) ;
+                    if ( ! ( vc -> is_Printed ) )
+                    {
+                        v = una -> cal ( una -> cal_name , v0 , is_legal , get_var_name ( N -> next [ 0 ] ) ) ;
+                        vc -> is_Printed = true ;
+                    }
+                    else v = v0 ;
+                }
+            }
+            else v = una -> cal ( una -> cal_name , v0 , is_legal ) ;
             if ( !is_legal ) return 0.0 ;
             return v ;
         }
