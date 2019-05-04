@@ -5,6 +5,11 @@ void throw_error ( int v , std::string s )
 {
     switch ( v )
     {
+        case 0 : //一般这个错误是只要不乱搞就不会出现的。如果出现了，那就代表我也不知道哪里出了问题。
+        {
+            std::cout << "ERROR: Unknown type error\n" ;
+            break ;
+        }
         case 1 :
         {
             std::cout << "ERROR: Division by zero\n" ;
@@ -27,7 +32,7 @@ void throw_error ( int v , std::string s )
         }
         case 5 :
         {
-            std::cout << "ERROR: Cannot evaluate in an expression\n" ;
+            std::cout << "ERROR: No matching operators\n" ;
             break ;
         }
         case 6 :
@@ -37,7 +42,7 @@ void throw_error ( int v , std::string s )
         }
         case 7 :
         {
-            std::cout << "ERROR: Cannot define a variate by itself\n" ;
+            std::cout << "ERROR: Cannot find node called '" << s << "'\n" ;
             break ;
         }
         case 8 :
@@ -78,6 +83,21 @@ void throw_error ( int v , std::string s )
         case 15 :
         {
             std::cout << "ERROR: Unknown node type\n" ;
+            break ;
+        }
+        case 16 :
+        {
+            std::cout << "ERROR: Please enter the number of Placeholders\n" ;
+            break ;
+        }
+        case 17 :
+        {
+            std::cout << "ERROR: OUT OF RANGE!\n" ;
+            break ;
+        }
+        case 19 :
+        {
+            std::cout << "ERROR: Node redefined\n" ;
             break ;
         }
         default :

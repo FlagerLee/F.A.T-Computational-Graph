@@ -142,7 +142,27 @@ bool Compute ( std::string s , std::map < std::string , Node* > Var_map , std::v
         }
         if ( vec.size () >= 3 )
         {
-            int Placeholder_number = stoi ( vec [ 2 ] ) ;
+
+            /**********语法检查**********/
+
+            int Placeholder_number ;
+            try
+            {
+                Placeholder_number = stoi ( vec [ 2 ] ) ;
+            }
+            catch ( std::invalid_argument& )
+            {
+                throw_error ( 16 ) ;
+                return false ;
+            }
+            catch ( std::out_of_range& )
+            {
+                throw_error ( 17 ) ;
+                return false ;
+            }
+
+            /**********end**********/
+
             if ( Placeholder_number * 2 + 3 > vec.size() )
             {
                 throw_error ( 10 ) ;
@@ -163,7 +183,26 @@ bool Compute ( std::string s , std::map < std::string , Node* > Var_map , std::v
                     throw_error ( 14 ) ;
                     return false ;
                 }
-                double v = stod ( vec [ 2 + ( 2 * i ) ] ) ;
+                double v ;
+
+                /**********语法检查**********/
+
+                try
+                {
+                    v = stod ( vec [ 2 + ( 2 * i ) ] ) ;
+                }
+                catch ( std::invalid_argument& )
+                {
+                    throw_error ( 10 ) ;
+                    return false ;
+                }
+                catch ( std::out_of_range& )
+                {
+                    throw_error ( 17 ) ;
+                    return false ;
+                }
+
+                /**********end**********/
                 eval ( v , N ) ;
                 Placeholder* p = dynamic_cast < Placeholder* > ( N ) ;
                 p -> have_value = true ;
@@ -171,7 +210,23 @@ bool Compute ( std::string s , std::map < std::string , Node* > Var_map , std::v
         }
         bool is_legal = true ;
         answer = com ( Var_map [ vec [ 1 ] ] , is_legal ) ;
+
+        /**********清除已赋的值**********/
+
         init ( Var_map [ vec [ 1 ] ] ) ;
+        if ( vec.size() >= 3 )
+        {
+            int Placeholder_number = stoi ( vec [ 2 ] ) ;
+            for ( int i = 1 ; i <= Placeholder_number ; i ++ )
+            {
+                std::string name = vec [ 2 + ( 2 * i ) - 1 ] ;
+                Placeholder* p = dynamic_cast < Placeholder* > ( Var_map [ name ] ) ;
+                p -> have_value = false ;
+            }
+        }
+
+        /**********结束清楚**********/
+
         return is_legal ;
     }
     throw_error ( 10 ) ;

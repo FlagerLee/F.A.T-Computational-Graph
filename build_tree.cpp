@@ -14,24 +14,88 @@ void build_var ( string s , map < string , Node* >& Var_map )
     vector < string > vec ;
     string buffer ;
     while ( in >> buffer ) vec.push_back ( buffer ) ;
+    
+    /**********语法检查**********/
+
+    double v ;
+    if ( vec.size() >= 3 )
+    {
+        try
+        {
+            v = stod ( vec [ 2 ] ) ;
+        }
+        catch ( std::invalid_argument& )
+        {
+            throw_error ( 10 ) ;
+            return ;
+        }
+        catch ( std::out_of_range& )
+        {
+            throw_error ( 17 ) ;
+            return ;
+        }
+    }
+
+    /**********end**********/
+
+    /**********创建Placeholder结点**********/
+
     if ( vec [ 1 ] == "P" )
     {
+        if ( Var_map.find ( vec [ 0 ] ) != Var_map.end() )
+        {
+            throw_error ( 19 ) ;
+            return ;
+        } 
         Node* N = new Placeholder ( vec [ 0 ] ) ;
         Var_map [ vec [ 0 ] ] = N ;
         return ;
     }
+
+    /**********end**********/
+
+    /**********创建Constant结点**********/
+
     if ( vec [ 1 ] == "C" )
     {
-        Node* N = new Constant ( vec [ 0 ] , stod ( vec [ 2 ] ) ) ;
+        if ( vec.size () < 3 )
+        {
+            throw_error ( 10 ) ;
+            return ;
+        }
+        if ( Var_map.find ( vec [ 0 ] ) != Var_map.end() )
+        {
+            throw_error ( 19 ) ;
+            return ;
+        }
+        Node* N = new Constant ( vec [ 0 ] , v ) ;
         Var_map [ vec [ 0 ] ] = N ;
         return ;
     }
+
+    /**********end**********/
+
+    /**********创建Variable结点**********/
+
     if ( vec [ 1 ] == "V" )
     {
-        Node* N = new Var_Constant ( vec [ 0 ] , stod ( vec [ 2 ] ) ) ;
+        if ( vec.size () < 3 )
+        {
+            throw_error ( 10 ) ;
+            return ;
+        }
+        if ( Var_map.find ( vec [ 0 ] ) != Var_map.end() ) 
+        {
+            throw_error ( 19 ) ;
+            return ;
+        }
+        Node* N = new Var_Constant ( vec [ 0 ] , v ) ;
         Var_map [ vec [ 0 ] ] = N ;
         return ;
     }
+
+    /**********end**********/
+
     throw_error ( 15 ) ;
     return ;
 }
@@ -56,6 +120,11 @@ Node* create_calculator(string s, int & count_arg) //后者是此运算符的参
         count_arg = 3 ;
     }
     // Binary/...
+    else
+    {
+        puts ( "continue" ) ;
+        throw "No match operator" ;
+    }
     return N;
 }
 inline int priority ( std::string c )
@@ -106,23 +175,47 @@ void build_tree(string s, std::map < std::string , Node* >& Var_map )   // 要�
     vector<string> vec;
     while(is>>buf)vec.push_back(buf);
     std::map < std::string , Node* >::iterator iter = Var_map.find ( vec [ 0 ] ) ;
-    //if ( iter != Var_map.end() ) delete_tree ( Var_map [ vec [ 0 ] ] ) ;
+    if ( iter != Var_map.end() && iter -> second -> get_name () != "Var" )
+    {
+        throw_error ( 19 ) ;
+        return ;
+    }
     Node* node = new Var(vec[0]); //確定是Var類型
     if ( vec.size () < 2 || vec [ 1 ] != "=" )
     {
         throw_error ( 10 ) ;
         return ;
     }
-    node->add_next(connect(vec, Var_map , 2, vec.size()-1)); //＊
+    bool is_legal = true ;
+    Node* N = connect ( vec , Var_map , 2 , vec.size() - 1 , is_legal ) ;
+    if ( !is_legal )
+    {
+        std::cout << "Connect failed\n" ;
+        return ;
+    }
+    node->add_next(N); //＊
     Var_map [ vec [ 0 ] ] = node ;
 }
-Node* connect(std::vector<string> vec , std::map<std::string , Node*> Var_map , int head , int tail)
+Node* connect(std::vector<string> vec , std::map<std::string , Node*> Var_map , int head , int tail , bool& is_legal )
 {
     //std::cout << head << " " << tail << "\n" ;
     Node* N;
+    if ( head > tail ) //你能触发这个错误算你赢
+                       //行吧打脸了，刚写完这个注释我就触发了这个错误。
+    {
+        is_legal = false ;
+        throw_error ( 0 ) ;
+        return N ;
+    }
     if(head==tail)
     {
-        N = Var_map[vec[head]];
+        if ( Var_map.find ( vec [ head ] ) != Var_map.end() ) N = Var_map [ vec [ head ] ] ;
+        else
+        {
+            is_legal = false ;
+            throw_error ( 7 , vec [ head ] ) ;
+            return N ;
+        }
     }
     else
     {
@@ -136,8 +229,9 @@ Node* connect(std::vector<string> vec , std::map<std::string , Node*> Var_map , 
             //std::cout << position_least_priority << "\n" ;
             if(vec[i]=="("){count_bracket++;}
             else if(vec[i]==")"){count_bracket--;}
-            else if(int x = priority(vec[i])&&!count_bracket)//有优先度，是运算符，且在括号外面
+            else if(priority(vec[i])&&!count_bracket)//有优先度，是运算符，且在括号外面
             {
+                int x = priority ( vec [ i ] ) ;
                 if(x<=least_priority) //相同优先度就取最右的（左结合）
                 {
                     least_priority = x;
@@ -147,26 +241,53 @@ Node* connect(std::vector<string> vec , std::map<std::string , Node*> Var_map , 
         }
         if(position_least_priority<0)//整个式子被括号括起来
         {
-            N = connect(vec, Var_map, head+1, tail-1);
+            if ( vec [ head ] != "(" || vec [ tail ] != ")" )
+            {
+                throw_error ( 10 ) ;
+                is_legal = false ;
+                return N ;
+            }
+            N = connect(vec, Var_map, head+1, tail-1 , is_legal );
+            if ( !is_legal ) return N ;
         }
         else
         {
-            N =  create_calculator(vec[position_least_priority], count_arg);//后者会被修改
+            try
+            {
+                N =  create_calculator(vec[position_least_priority], count_arg);//后者会被修改
+            }
+            catch ( const char* s ) 
+            {
+                throw_error ( 5 ) ;
+                is_legal = false ;
+                return N ;
+            }
             switch (count_arg) {
                 case 1:
-                    N->add_next(connect(vec, Var_map, position_least_priority+1, tail));
+                {
+                    Node* n = connect ( vec , Var_map , position_least_priority + 1 , tail , is_legal ) ;
+                    if ( !is_legal ) return N ;
+                    N->add_next(n);
                     break;
+                }
                     
                 case 2:
-                    N->add_next(connect(vec, Var_map, head, position_least_priority-1));
-                    N->add_next(connect(vec, Var_map, position_least_priority+1, tail));
+                {
+                    Node* n1 = connect ( vec , Var_map , head , position_least_priority - 1 , is_legal ) ;
+                    if ( !is_legal ) return N ;
+                    Node* n2 = connect ( vec , Var_map , position_least_priority + 1 , tail , is_legal ) ;
+                    if ( !is_legal ) return N ;
+                    N -> add_next ( n1 ) ; N -> add_next ( n2 ) ;
                     break;
+                }
                 
                 case 3:
+                {
                     N->add_next(Var_map[vec[3]]);
                     N->add_next(Var_map[vec[4]]);
                     N->add_next(Var_map[vec[5]]);
                     break;
+                }
                     
             }
         }
