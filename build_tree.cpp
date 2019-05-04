@@ -179,7 +179,9 @@ Node* connect(std::vector<string> vec , std::map<std::string , Node*> Var_map , 
                     break;
                 
                 case 3:
-                    
+                    N->add_next(Var_map[vec[3]]);
+                    N->add_next(Var_map[vec[4]]);
+                    N->add_next(Var_map[vec[5]]);
             }
         }
     }
