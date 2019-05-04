@@ -44,7 +44,7 @@ Node* create_calculator(string s, int & count_arg) //后者是此运算符的参
         N = new Unary_Operator ( s ) ;
         count_arg = 1 ;
     }
-    else if(s=="+"||s=="-"||s=="*"||s=="/") //|| "Print" || ...
+    else if(s=="+"||s=="-"||s=="*"||s=="/"||s=="<"||s==">"||s=="<="||s==">="||s=="==") //|| "Print" || ...
     {
         //Unary_Operator* una = new Unary_Operator ( s )
         N = new Binary_Operator ( s ) ;
@@ -60,28 +60,23 @@ Node* create_calculator(string s, int & count_arg) //后者是此运算符的参
 }
 inline int priority ( std::string c )
 {
-    if(c=="+") return 1 ;
-    if(c=="-") return 1 ;
-    if(c=="*") return 2 ;
-    if(c=="/") return 2 ;
-    if ( c == "SIN" ) return 3 ;
-    if ( c == "LOG" ) return 3 ;
-    if ( c == "EXP" ) return 3 ;
-    if ( c == "SIGMOID" ) return 3 ;
-    if ( c == "TANH" ) return 3 ;
-    if ( c == "PRINT" ) return 4 ;
+    if ( c == "<" ) return 1 ;
+    if ( c == ">" ) return 1 ;
+    if ( c == "<=" ) return 1 ;
+    if ( c == ">=" ) return 1 ;
+    if ( c == "==" ) return 1 ;
+    if(c=="+") return 2 ;
+    if(c=="-") return 2 ;
+    if(c=="*") return 3 ;
+    if(c=="/") return 3 ;
+    if ( c == "SIN" ) return 4 ;
+    if ( c == "LOG" ) return 4 ;
+    if ( c == "EXP" ) return 4 ;
+    if ( c == "SIGMOID" ) return 4 ;
+    if ( c == "TANH" ) return 4 ;
+    if ( c == "PRINT" ) return 5 ;
+    if ( c == "COND" ) return 5 ;
     return 0 ;
-}
-void delete_tree ( Node* N )
-{
-    int len = N -> next.size() ;
-    for ( int i = len - 1 ; i >=0 ; i -- )
-    {
-        std::string s = N -> next [ i ] -> get_name() ;
-        if ( s == "Placeholder" || s == "Constant" || s == "Var" || s == "Var_Constant" ) continue ;
-        else delete_tree ( N -> next [ i ] ) ;
-        delete ( N -> next [ i ] ) ;
-    }
 }
 void init(Node* N)
 {
@@ -90,23 +85,11 @@ void init(Node* N)
     {
         Var* v = dynamic_cast < Var* > ( N ) ;
         v->have_value = false;
-        v->is_Printed = false;
     }
     else if ( s == "Placeholder" )
     {
         Placeholder* p = dynamic_cast < Placeholder* > ( N ) ;
         p -> have_value = false ;
-        p -> is_Printed = false ;
-    }
-    else if ( s == "Constant" )
-    {
-        Constant* c = dynamic_cast < Constant* > ( N ) ;
-        c -> is_Printed = false ;
-    }
-    else if ( s == "Var_Constant" )
-    {
-        Var_Constant* vc = dynamic_cast < Var_Constant* > ( N ) ;
-        vc -> is_Printed = false ;
     }
     int size = N->next.size();
     for(int i=0;i<size;i++)
@@ -123,7 +106,7 @@ void build_tree(string s, std::map < std::string , Node* >& Var_map )   // 要�
     vector<string> vec;
     while(is>>buf)vec.push_back(buf);
     std::map < std::string , Node* >::iterator iter = Var_map.find ( vec [ 0 ] ) ;
-    if ( iter != Var_map.end() ) delete_tree ( Var_map [ vec [ 0 ] ] ) ;
+    //if ( iter != Var_map.end() ) delete_tree ( Var_map [ vec [ 0 ] ] ) ;
     Node* node = new Var(vec[0]); //確定是Var類型
     if ( vec.size () < 2 || vec [ 1 ] != "=" )
     {
@@ -135,7 +118,7 @@ void build_tree(string s, std::map < std::string , Node* >& Var_map )   // 要�
 }
 Node* connect(std::vector<string> vec , std::map<std::string , Node*> Var_map , int head , int tail)
 {
-   // std::cout << head << " " << tail << "\n" ;
+    //std::cout << head << " " << tail << "\n" ;
     Node* N;
     if(head==tail)
     {
@@ -150,6 +133,7 @@ Node* connect(std::vector<string> vec , std::map<std::string , Node*> Var_map , 
         //std::cout << vec [ head ] << "\n" ;
         for(int i = head; i<=tail; i++ )
         {
+            //std::cout << position_least_priority << "\n" ;
             if(vec[i]=="("){count_bracket++;}
             else if(vec[i]==")"){count_bracket--;}
             else if(int x = priority(vec[i])&&!count_bracket)//有优先度，是运算符，且在括号外面
@@ -182,6 +166,8 @@ Node* connect(std::vector<string> vec , std::map<std::string , Node*> Var_map , 
                     N->add_next(Var_map[vec[3]]);
                     N->add_next(Var_map[vec[4]]);
                     N->add_next(Var_map[vec[5]]);
+                    break;
+                    
             }
         }
     }

@@ -140,31 +140,34 @@ bool Compute ( std::string s , std::map < std::string , Node* > Var_map , std::v
             throw_error ( 11 , vec [ 1 ] ) ;
             return false ;
         }
-        int Placeholder_number = stoi ( vec [ 2 ] ) ;
-        if ( Placeholder_number * 2 + 3 > vec.size() )
+        if ( vec.size () >= 3 )
         {
-            throw_error ( 10 ) ;
-            return false ;
-        }
-        for ( int i = 1 ; i <= Placeholder_number ; i ++ )
-        {
-            std::string name = vec [ 2 + ( 2 * i ) - 1 ] ;
-            if ( Var_map.find ( name ) == Var_map.end() )
+            int Placeholder_number = stoi ( vec [ 2 ] ) ;
+            if ( Placeholder_number * 2 + 3 > vec.size() )
             {
-                throw_error ( 11 , vec [ 2 + ( 2 * i ) - 1 ] ) ;
+                throw_error ( 10 ) ;
                 return false ;
             }
-            Node* &N = Var_map [ name ] ;
-            std::string type_name = N -> get_name () ;
-            if ( type_name != "Placeholder" )
+            for ( int i = 1 ; i <= Placeholder_number ; i ++ )
             {
-                throw_error ( 14 ) ;
-                return false ;
+                std::string name = vec [ 2 + ( 2 * i ) - 1 ] ;
+                if ( Var_map.find ( name ) == Var_map.end() )
+                {
+                    throw_error ( 11 , vec [ 2 + ( 2 * i ) - 1 ] ) ;
+                    return false ;
+                }
+                Node* &N = Var_map [ name ] ;
+                std::string type_name = N -> get_name () ;
+                if ( type_name != "Placeholder" )
+                {
+                    throw_error ( 14 ) ;
+                    return false ;
+                }
+                double v = stod ( vec [ 2 + ( 2 * i ) ] ) ;
+                eval ( v , N ) ;
+                Placeholder* p = dynamic_cast < Placeholder* > ( N ) ;
+                p -> have_value = true ;
             }
-            double v = stod ( vec [ 2 + ( 2 * i ) ] ) ;
-            eval ( v , N ) ;
-            Placeholder* p = dynamic_cast < Placeholder* > ( N ) ;
-            p -> have_value = true ;
         }
         bool is_legal = true ;
         answer = com ( Var_map [ vec [ 1 ] ] , is_legal ) ;
@@ -208,7 +211,11 @@ double com( Node* N , bool& is_legal )
             {
                 double v = com ( N -> next[0] , is_legal ) ;
                 if ( !is_legal ) return 0.0 ;
-                if ( eval ( v , N ) ) return v ;
+                if ( eval ( v , N ) )
+                {
+                    var -> have_value = true ;
+                    return v ;
+                }
                 else //此处其实已经保证了eval的是var结点，不会进入此else分支。但我就是想写这个else。。。
                 {
                     is_legal = false ;
@@ -229,42 +236,22 @@ double com( Node* N , bool& is_legal )
                 if ( next_name == "Placeholder" )
                 {
                     Placeholder* p = dynamic_cast < Placeholder* > ( n ) ;
-                    if ( ! ( p -> is_Printed ) )
-                    {
-                        v = una -> cal ( una -> cal_name , v0 , is_legal , get_var_name ( N -> next [ 0 ] ) ) ;
-                        p -> is_Printed = true ;
-                    }
-                    else v = v0 ;
+                    v = una -> cal ( una -> cal_name , v0 , is_legal , get_var_name ( N -> next [ 0 ] ) ) ;
                 }
                 else if ( next_name == "Var" )
                 {
                     Var* var = dynamic_cast < Var* > ( n ) ;
-                    if ( ! ( var -> is_Printed ) )
-                    {
-                        v = una -> cal ( una -> cal_name , v0 , is_legal , get_var_name ( N -> next [ 0 ] ) ) ;
-                        var -> is_Printed = true ;
-                    }
-                    else v = v0 ;
+                    v = una -> cal ( una -> cal_name , v0 , is_legal , get_var_name ( N -> next [ 0 ] ) ) ;
                 }
                 else if ( next_name == "Constant" )
                 {
                     Constant* c = dynamic_cast < Constant* > ( n ) ;
-                    if ( ! ( c -> is_Printed ) ) 
-                    {
-                        v = una -> cal ( una -> cal_name , v0 , is_legal , get_var_name ( N -> next [ 0 ] ) ) ;
-                        c -> is_Printed = true ;
-                    }
-                    else v = v0 ;
+                    v = una -> cal ( una -> cal_name , v0 , is_legal , get_var_name ( N -> next [ 0 ] ) ) ;
                 }
                 else if ( next_name == "Var_Constant" )
                 {
                     Var_Constant* vc = dynamic_cast < Var_Constant* > ( n ) ;
-                    if ( ! ( vc -> is_Printed ) )
-                    {
-                        v = una -> cal ( una -> cal_name , v0 , is_legal , get_var_name ( N -> next [ 0 ] ) ) ;
-                        vc -> is_Printed = true ;
-                    }
-                    else v = v0 ;
+                    v = una -> cal ( una -> cal_name , v0 , is_legal , get_var_name ( N -> next [ 0 ] ) ) ;
                 }
             }
             else v = una -> cal ( una -> cal_name , v0 , is_legal ) ;

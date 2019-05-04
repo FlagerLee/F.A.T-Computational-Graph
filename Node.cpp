@@ -67,68 +67,52 @@ double Unary_Operator::cal ( string s , double v , bool& is_legal , string print
 
 double Binary_Operator::cal ( string s , double v1 , double v2 , bool& is_legal )
 {
-    switch ( s [ 0 ] )
+    if ( s == "+" ) return v1 + v2 ;
+    if ( s == "-" ) return v1 - v2 ;
+    if ( s == "*" ) return v1 * v2 ;
+    if ( s == "/" )
     {
-        case '+' : return v1 + v2 ;
-        case '-' : return v1 - v2 ;
-        case '*' : return v1 * v2 ;
-        case '/' :
-        {
-            if ( v2 == 0 )
-            {
-                is_legal = false ;
-                throw_error ( 1 ) ;
-                return 0.0 ;
-            }
-            else return v1 / v2 ;
-        }
-        case '<' :
-        {
-            if ( s.length() == 1 )
-            {
-                if ( v1 < v2 ) return 1.0 ;
-                else return 0.0 ;
-            }
-            else if ( s [ 1 ] == '=' )
-            {
-                if ( v1 <= v2 ) return 1.0 ;
-                else return 0.0 ;
-            }
-        }
-        case '>' :
-        {
-            if ( s.length() == 1 )
-            {
-                if ( v1 > v2 ) return 1.0 ;
-                else return 0.0 ;
-            }
-            else if ( s [ 1 ] == '-' )
-            {
-                if ( v1 >= v2 ) return 1.0 ;
-                else return 0.0 ;
-            }
-        }
-        case '=' :
-        {
-            if ( s.length() == 1 )
-            {
-                is_legal = false ;
-                throw_error ( 5 ) ;
-                return 0.0 ;
-            }
-            else
-            {
-                if ( v1 == v2 ) return 1.0 ;
-                else return 0.0 ;
-            }
-        }
-        default :
+        if ( v2 == 0 )
         {
             is_legal = false ;
-            throw_error ( 3 , s ) ;
+            throw_error ( 1 ) ;
             return 0.0 ;
         }
+        else return v1 / v2 ;
     }
+    if ( s == "<" )
+    {
+        if ( v1 < v2 ) return 1.0 ;
+        else return 0.0 ;
+    }
+    if ( s == ">" )
+    {
+        if ( v1 > v2 ) return 1.0 ;
+        else return 0.0 ;
+    }
+    if ( s == "<=" )
+    {
+        if ( v1 <= v2 ) return 1.0 ;
+        else return 0.0 ;
+    }
+    if ( s == ">=" )
+    {
+        if ( v1 >= v2 ) return 1.0 ;
+        else return 0.0 ;
+    }
+    if ( s == "==" )
+    {
+        if ( v1 == v2 ) return 1.0 ;
+        else return 0.0 ;
+    }
+    if ( s == "=" )
+    {
+        is_legal = false ;
+        throw_error ( 5 ) ;
+        return 0.0 ;
+    }
+    is_legal = false ;
+    throw_error ( 3 , s ) ;
     return 0.0 ;
 }
 
@@ -136,7 +120,7 @@ double Ternary_Operator::cal ( string s , double v1 , double v2 , double v3 , bo
 {
     if ( s == "COND" )
     {
-        return v1 ? v2 : v3 ;
+        return v1 > 0 ? v2 : v3 ;
     }
     else
     {

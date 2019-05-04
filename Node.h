@@ -52,10 +52,9 @@ class Placeholder : public Node
     friend bool eval ( double v , Node* N ) ;
     friend std::string get_var_name ( Node* N ) ;
     public:
-    bool is_Printed ;
     bool have_value ;
     std::string get_name () ;
-    Placeholder ( std::string s , double v = 0.0 ) : var_name  ( s ) , value ( v ) { have_value = false ; is_Printed = false ; }
+    Placeholder ( std::string s , double v = 0.0 ) : var_name  ( s ) , value ( v ) { have_value = false ; }
 } ;
 
 /* Derive: class Constant
@@ -71,9 +70,8 @@ class Constant : public Node
     friend double get_value ( Node* N ) ;
     friend std::string get_var_name ( Node* N ) ;
     public:
-    bool is_Printed ;
     std::string get_name () ;
-    Constant ( std::string s , double v = 0.0 ) :  var_name ( s ) , value ( v ) { is_Printed = false ; }
+    Constant ( std::string s , double v = 0.0 ) :  var_name ( s ) , value ( v ) {}
 } ;
 
 /* Derive: class Var
@@ -90,10 +88,9 @@ class Var : public Node
     friend bool eval ( double v , Node* N ) ;
     friend std::string get_var_name ( Node* N ) ;
     public:
-    bool is_Printed ;
     bool have_value ;
     std::string get_name () ;
-    Var ( std::string s , double v = 0.0 ) : var_name ( s ) , value ( v ) { have_value = false ; is_Printed = false ; }
+    Var ( std::string s , double v = 0.0 ) : var_name ( s ) , value ( v ) { have_value = false ; }
 } ;
 
 /* Derive: class Var_Constant
@@ -109,10 +106,9 @@ class Var_Constant : public Node
     friend double get_value ( Node* N ) ;
     friend std::string get_var_name ( Node* N ) ;
     public:
-    bool is_Printed ;
     void set ( double v ) { value = v ; }
     std::string get_name () ;
-    Var_Constant ( std::string s , double v ) : var_name ( s ) , value ( v ) { is_Printed = false ; }
+    Var_Constant ( std::string s , double v ) : var_name ( s ) , value ( v ) {}
 } ;
 
 /* Derive: class Caculator
