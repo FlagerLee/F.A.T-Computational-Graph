@@ -8,7 +8,7 @@
 #include "CG_debug.h"
 using namespace std;
 
-void build_var ( string s , map < string , Node* >& Var_map )
+void build_var ( string s , map < string , Node* >& Var_map ) //第一步赋值
 {
     stringstream in ( s ) ;
     vector < string > vec ;
@@ -100,6 +100,7 @@ void build_var ( string s , map < string , Node* >& Var_map )
     return ;
 }
 
+//创建运算符，如加减乘除之类的运算符
 Node* create_calculator(string s, int & count_arg) //后者是此运算符的参数个数
 {
     Node* N ;
@@ -127,6 +128,8 @@ Node* create_calculator(string s, int & count_arg) //后者是此运算符的参
     }
     return N;
 }
+
+//优先级
 inline int priority ( std::string c )
 {
     if ( c == "<" ) return 1 ;
@@ -147,6 +150,8 @@ inline int priority ( std::string c )
     if ( c == "COND" ) return 5 ;
     return 0 ;
 }
+
+//递归清空y已赋值结点
 void init(Node* N)
 {
     std::string s = N->get_name();
@@ -167,6 +172,7 @@ void init(Node* N)
     }
 }
 
+//建树函数：预处理
 void build_tree(string s, std::map < std::string , Node* >& Var_map )   // 要有單純string版本的初始化
 //已經確定了第一節為變量名、第二節為 "="
 {
@@ -196,6 +202,8 @@ void build_tree(string s, std::map < std::string , Node* >& Var_map )   // 要�
     node->add_next(N); //＊
     Var_map [ vec [ 0 ] ] = node ;
 }
+
+//建树：链接结点
 Node* connect(std::vector<string> vec , std::map<std::string , Node*> Var_map , int head , int tail , bool& is_legal )
 {
     //std::cout << head << " " << tail << "\n" ;
@@ -207,10 +215,10 @@ Node* connect(std::vector<string> vec , std::map<std::string , Node*> Var_map , 
         throw_error ( 0 ) ;
         return N ;
     }
-    if(head==tail)
+    if(head==tail) //单个操作符
     {
         if ( Var_map.find ( vec [ head ] ) != Var_map.end() ) N = Var_map [ vec [ head ] ] ;
-        else
+        else //不存在的结点
         {
             is_legal = false ;
             throw_error ( 7 , vec [ head ] ) ;
@@ -219,14 +227,12 @@ Node* connect(std::vector<string> vec , std::map<std::string , Node*> Var_map , 
     }
     else
     {
-        int count_bracket = 0;
-        int position_least_priority = -1;
+        int count_bracket = 0; //判定括号用的参数
+        int position_least_priority = -1; //最后一个运算的符号
         int least_priority = 10000;//别搞出10000个运算符就好。。
         int count_arg;//运算符数
-        //std::cout << vec [ head ] << "\n" ;
         for(int i = head; i<=tail; i++ )
         {
-            //std::cout << position_least_priority << "\n" ;
             if(vec[i]=="("){count_bracket++;}
             else if(vec[i]==")"){count_bracket--;}
             else if(priority(vec[i])&&!count_bracket)//有优先度，是运算符，且在括号外面
