@@ -22,7 +22,7 @@ void Node::del ()
 std::string Node::get_name () { return "Node" ; }
 std::string Var::get_name () { return "Var" ; }
 std::string Placeholder::get_name () { return "Placeholder" ; }
-std::string Var_Constant::get_name () { return "Var_Constant" ; }
+std::string Variable::get_name () { return "Variable" ; }
 std::string Constant::get_name () { return "Constant" ; }
 std::string Calculator::get_name () { return "Calculator" ; }
 std::string Unary_Operator::get_name () { return "Unary_Operator" ; }

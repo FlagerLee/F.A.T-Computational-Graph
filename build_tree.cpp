@@ -89,7 +89,7 @@ void build_var ( string s , map < string , Node* >& Var_map ) //第一步赋值
             throw_error ( 19 ) ;
             return ;
         }
-        Node* N = new Var_Constant ( vec [ 0 ] , v ) ;
+        Node* N = new Variable ( vec [ 0 ] , v ) ;
         Var_map [ vec [ 0 ] ] = N ;
         return ;
     }
@@ -172,16 +172,19 @@ void init(Node* N)
     }
 }
 
-//建树函数：预处理
+/**建树函数：预处理
+ * 参数：s：一行创建结点的语句
+ *      Var_map：结点名称到结点的映射，用于链接结点和判定语法用
+**/
 void build_tree(string s, std::map < std::string , Node* >& Var_map )   // 要有單純string版本的初始化
 //已經確定了第一節為變量名、第二節為 "="
 {
-    stringstream is(s);
-    string buf;
-    vector<string> vec;
-    while(is>>buf)vec.push_back(buf);
-    std::map < std::string , Node* >::iterator iter = Var_map.find ( vec [ 0 ] ) ;
-    if ( iter != Var_map.end() && iter -> second -> get_name () != "Var" )
+    stringstream is(s); //将指令转换为字符串流
+    string buf; //读取指令用的临时变量
+    vector<string> vec; //储存指令用
+    while(is>>buf)vec.push_back(buf); //读取指令
+    std::map < std::string , Node* >::iterator iter = Var_map.find ( vec [ 0 ] ) ; //查找链接所需结点
+    if ( iter != Var_map.end() && iter -> second -> get_name () != "Var" ) //出现了未定义的结点，报错，退出
     {
         throw_error ( 19 ) ;
         return ;
@@ -193,17 +196,23 @@ void build_tree(string s, std::map < std::string , Node* >& Var_map )   // 要�
         return ;
     }
     bool is_legal = true ;
-    Node* N = connect ( vec , Var_map , 2 , vec.size() - 1 , is_legal ) ;
-    if ( !is_legal )
+    Node* N = connect ( vec , Var_map , 2 , vec.size() - 1 , is_legal ) ; //链接
+    if ( !is_legal ) //无法链接
     {
         std::cout << "Connect failed\n" ;
         return ;
     }
-    node->add_next(N); //＊
-    Var_map [ vec [ 0 ] ] = node ;
+    node->add_next(N); //将建好的树的根结点（运算符结点）链接到变量结点上
+    Var_map [ vec [ 0 ] ] = node ; //添加变量结点
 }
 
-//建树：链接结点
+/**建树：链接结点
+ * 参数：vec：输入的指令
+ *      Var_map：结点名字到结点的映射，用于链接结点
+ *      head、tail：当前处理的语句的位置指示符
+ *      is_legal：判定能否正常链接这棵树
+ * 返回值：一个Node*结点，表示建好的树的根结点
+**/
 Node* connect(std::vector<string> vec , std::map<std::string , Node*> Var_map , int head , int tail , bool& is_legal )
 {
     //std::cout << head << " " << tail << "\n" ;
@@ -212,7 +221,7 @@ Node* connect(std::vector<string> vec , std::map<std::string , Node*> Var_map , 
                        //行吧打脸了，刚写完这个注释我就触发了这个错误。
     {
         is_legal = false ;
-        throw_error ( 0 ) ;
+        throw_error ( 10 ) ;
         return N ;
     }
     if(head==tail) //单个操作符
@@ -247,7 +256,7 @@ Node* connect(std::vector<string> vec , std::map<std::string , Node*> Var_map , 
         }
         if(position_least_priority<0)//整个式子被括号括起来
         {
-            if ( vec [ head ] != "(" || vec [ tail ] != ")" )
+            if ( vec [ head ] != "(" || vec [ tail ] != ")" ) //如果没有被括号括起来
             {
                 throw_error ( 10 ) ;
                 is_legal = false ;
@@ -258,6 +267,11 @@ Node* connect(std::vector<string> vec , std::map<std::string , Node*> Var_map , 
         }
         else
         {
+
+            /**********语法检查**********/
+            //事实上这一步不会出问题，因为position_least_priority不会指向非运算符结点
+            //你能触发这个错误算我输
+
             try
             {
                 N =  create_calculator(vec[position_least_priority], count_arg);//后者会被修改
@@ -268,8 +282,10 @@ Node* connect(std::vector<string> vec , std::map<std::string , Node*> Var_map , 
                 is_legal = false ;
                 return N ;
             }
+
+            /**********语法检查**********/
             switch (count_arg) {
-                case 1:
+                case 1: //单目运算符
                 {
                     Node* n = connect ( vec , Var_map , position_least_priority + 1 , tail , is_legal ) ;
                     if ( !is_legal ) return N ;
@@ -277,17 +293,18 @@ Node* connect(std::vector<string> vec , std::map<std::string , Node*> Var_map , 
                     break;
                 }
                     
-                case 2:
+                case 2: //双目运算符
                 {
-                    Node* n1 = connect ( vec , Var_map , head , position_least_priority - 1 , is_legal ) ;
+                    Node* n1 = connect ( vec , Var_map , head , position_least_priority - 1 , is_legal ) ; //链接左侧
                     if ( !is_legal ) return N ;
-                    Node* n2 = connect ( vec , Var_map , position_least_priority + 1 , tail , is_legal ) ;
+                    Node* n2 = connect ( vec , Var_map , position_least_priority + 1 , tail , is_legal ) ; //链接右侧
                     if ( !is_legal ) return N ;
                     N -> add_next ( n1 ) ; N -> add_next ( n2 ) ;
                     break;
                 }
                 
-                case 3:
+                case 3: //三目运算符
+                        //由于三目运算符没有明确的语法规定，不知道它能不能放到复杂表达式里。因此此处默认COND运算符后接的是三个简单结点。若出现了三元运算符的复杂规则，请自行改动此处代码
                 {
                     N->add_next(Var_map[vec[3]]);
                     N->add_next(Var_map[vec[4]]);

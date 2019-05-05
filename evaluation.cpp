@@ -8,7 +8,7 @@
 #include <cstdlib>
 #include <iostream>
 
-double get_value ( Node* N ) //必须确保N指向的是Var类或Placeholder类或Constant类或Var_Constant类
+double get_value ( Node* N ) //必须确保N指向的是Var类或Placeholder类或Constant类或Variable类
 {
     std::string s = N -> get_name () ;
     if ( s == "Var" )
@@ -26,9 +26,9 @@ double get_value ( Node* N ) //必须确保N指向的是Var类或Placeholder类�
         Constant* c = dynamic_cast < Constant* > ( N ) ;
         return c -> value ;
     }
-    else if ( s == "Var_Constant" )
+    else if ( s == "Variable" )
     {
-        Var_Constant* vc = dynamic_cast < Var_Constant* > ( N ) ;
+        Variable* vc = dynamic_cast < Variable* > ( N ) ;
         return vc -> value ;
     }
     throw_error ( 12 , s ) ;
@@ -72,9 +72,9 @@ std::string get_var_name ( Node* N )
         Constant* c = dynamic_cast < Constant* > ( N ) ;
         return c -> var_name ;
     }
-    if ( name == "Var_Constant" )
+    if ( name == "Variable" )
     {
-        Var_Constant* vc = dynamic_cast < Var_Constant* > ( N ) ;
+        Variable* vc = dynamic_cast < Variable* > ( N ) ;
         return vc -> var_name ;
     }
     throw_error ( 10 ) ;
@@ -134,13 +134,13 @@ bool Compute ( std::string s , std::map < std::string , Node* > Var_map , std::v
         
         /**********end**********/
 
-        if ( Var_map [ vec [ 1 ] ] -> get_name () != "Var_Constant" ) //语法检查：防止SET一个不正确的类型
+        if ( Var_map [ vec [ 1 ] ] -> get_name () != "Variable" ) //语法检查：防止SET一个不正确的类型
         {
             throw_error ( 13 ) ;
             return false ;
         }
         //set操作
-        Var_Constant* vc = dynamic_cast < Var_Constant* > ( Var_map [ vec [ 1 ] ] ) ;
+        Variable* vc = dynamic_cast < Variable* > ( Var_map [ vec [ 1 ] ] ) ;
         vc -> set ( v ) ;
         return false ;
     }
@@ -178,13 +178,13 @@ bool Compute ( std::string s , std::map < std::string , Node* > Var_map , std::v
         
         /**********end**********/
 
-        if ( Var_map [ vec [ 1 ] ] -> get_name () != "Var_Constant" ) //语法检查：防止SET一个不正确的类型
+        if ( Var_map [ vec [ 1 ] ] -> get_name () != "Variable" ) //语法检查：防止SET一个不正确的类型
         {
             throw_error ( 13 ) ;
             return false ;
         }
         //set操作
-        Var_Constant* vc = dynamic_cast < Var_Constant* > ( Var_map [ vec [ 1 ] ] ) ;
+        Variable* vc = dynamic_cast < Variable* > ( Var_map [ vec [ 1 ] ] ) ;
         vc -> set ( setanswer [ v - 1 ] ) ;
         return false ;
     }
@@ -375,9 +375,9 @@ double com ( Node* N , bool& is_legal )
                     Constant* c = dynamic_cast < Constant* > ( n ) ;
                     v = una -> cal ( una -> cal_name , v0 , is_legal , get_var_name ( N -> next [ 0 ] ) ) ;
                 }
-                else if ( next_name == "Var_Constant" )
+                else if ( next_name == "Variable" )
                 {
-                    Var_Constant* vc = dynamic_cast < Var_Constant* > ( n ) ;
+                    Variable* vc = dynamic_cast < Variable* > ( n ) ;
                     v = una -> cal ( una -> cal_name , v0 , is_legal , get_var_name ( N -> next [ 0 ] ) ) ;
                 }
             }
