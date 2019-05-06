@@ -1,7 +1,7 @@
 # 运行环境
 
 ## Mac OS Mojave
-编译指令：
+#### 编译指令：
 > make main
 
 或
@@ -13,7 +13,7 @@ make
 > make clean
 ---
 ## Ubuntu 17.10 64位
-编译指令：
+#### 编译指令：
 > make main
 或
 > cmake .  
@@ -24,7 +24,7 @@ make
 > make clean
 ---
 ## Windows 10
-编译指令：
+#### 编译指令：
 > make win_main
 
 或
