@@ -1,3 +1,8 @@
+# 编译选项
+- -O2优化
+- C++14标准
+- cmake最低需版本version 3.9
+
 # 运行环境
 
 ## Mac OS Mojave
