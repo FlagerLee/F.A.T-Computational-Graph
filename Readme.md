@@ -5,7 +5,7 @@
 > make main
 
 或
-> cmake .
+> cmake .  
 make
 
 若用cmake编译，则原makefile可能会被覆盖
@@ -16,7 +16,7 @@ make
 编译指令：
 > make main
 或
-> cmake .
+> cmake .  
 make
 
 若用cmake编译，则原makefile可能会被覆盖
@@ -28,7 +28,7 @@ make
 > make win_main
 
 或
-> cmake .
+> cmake .  
 make
 
 若用cmake编译，则原makefile可能会被覆盖
