@@ -2,7 +2,7 @@
 
 ## Mac OS Mojave
 编译指令：
-> make main >
+< make main >
 或
 > cmake .
 > make
