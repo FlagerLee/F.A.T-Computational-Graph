@@ -127,27 +127,6 @@ class Variable : public Node
     Variable ( std::string s , double v ) : var_name ( s ) , value ( v ) {}
 } ;
 
-/* Derive: class Caculator
- * 运算符结点：由基类Node继承而来，表示运算符，如加减乘除
- * 友元：Placeholder类
- *      Constant类
- *      Var类
- *      Variable类
-**/
-
-class Calculator : public Node
-{
-    private:
-    friend class Placeholder ;
-    friend class Constant ;
-    friend class Var ;
-    friend class Variable ;
-    protected:
-    public:
-    std::string get_name () ;
-    Calculator () {}
-} ;
-
 /* Derive: Unary_operator
  * 单目运算符结点
  * 新增内容：cal_name：运算符名称
@@ -155,7 +134,7 @@ class Calculator : public Node
  * 友元：com：计算函数
 **/
 
-class Unary_Operator : public Calculator //单目运算符
+class Unary_Operator : public Node //单目运算符
 {
     private:
     std::string cal_name ; //运算符名称
@@ -176,7 +155,7 @@ class Unary_Operator : public Calculator //单目运算符
  *         cal：双目运算符运算函数
  * 友元：com：计算函数
 **/
-class Binary_Operator : public Calculator //双目运算符
+class Binary_Operator : public Node //双目运算符
 {
     private:
     std::string cal_name ;
@@ -196,7 +175,7 @@ class Binary_Operator : public Calculator //双目运算符
  *         cal：三目运算符函数
  * 友元：com：计算函数
 **/
-class Ternary_Operator : public Calculator //三目运算符
+class Ternary_Operator : public Node //三目运算符
 {
     private:
     std::string cal_name ;

@@ -24,14 +24,13 @@ std::string Var::get_name () { return "Var" ; }
 std::string Placeholder::get_name () { return "Placeholder" ; }
 std::string Variable::get_name () { return "Variable" ; }
 std::string Constant::get_name () { return "Constant" ; }
-std::string Calculator::get_name () { return "Calculator" ; }
 std::string Unary_Operator::get_name () { return "Unary_Operator" ; }
 std::string Binary_Operator::get_name () { return "Binary_Operator" ; }
 std::string Ternary_Operator::get_name () { return "Ternary_Operator" ; }
 
 //#end#
 
-//Calculator类
+//运算符类
 
 double Unary_Operator::cal ( string s , double v , bool& is_legal , string print_out )
 {
